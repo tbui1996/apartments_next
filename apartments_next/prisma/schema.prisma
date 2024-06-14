@@ -14,8 +14,47 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  username String  @unique
-  email    String  @unique
-  password String
+  id                String            @id @default(uuid())
+  username          String            @unique
+  email             String            @unique
+  password          String
+  role              String            @default("user")
+  
+  // Add the apartments relation to establish the opposite relation
+  apartments        Apartment[]       @relation("UserApartments")
+  favoriteApartments FavoriteApartment[]
+}
+
+model Apartment {
+  uuid            String     @id @default(uuid())
+  title           String
+  previewImage    String
+  description     String
+  area            Int
+  roomsNo         Int
+  monthlyPrice    Int
+  isAvailable     Boolean
+  createdAt       DateTime   @default(now())
+  
+  // Define the realtor relation and reference the realtorUuid
+  realtor         User       @relation("UserApartments", fields: [realtorUuid], references: [id])
+  realtorUuid     String
+  
+  coordinatesLat  String
+  coordinatesLng  String
+  
+  // Add the favoriteApartments relation to Apartment
+  favoriteApartments FavoriteApartment[]
+}
+
+model FavoriteApartment {
+  uuid          String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  
+  // Define relations to User and Apartment
+  user          User      @relation(fields: [userUuid], references: [id])
+  userUuid      String
+  
+  apartment     Apartment @relation(fields: [apartmentUuid], references: [uuid])
+  apartmentUuid String
 }
