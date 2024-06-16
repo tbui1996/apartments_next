@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container, TextField, Typography, Button, Box, Link } from '@mui/material';
+import { Container, TextField, Typography, Button, Box, Link, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import Layout from '@/components/Layout';
 
 const RegisterPage: React.FC = () => {
@@ -10,6 +10,7 @@ const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [confirmEmail, setConfirmEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [role, setRole] = useState<string>('user'); // Default role is 'user'
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,7 +25,7 @@ const RegisterPage: React.FC = () => {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password })
+      body: JSON.stringify({ username, email, password, role })
     });
 
     if (response.ok) {
@@ -93,6 +94,19 @@ const RegisterPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <FormControl fullWidth variant="outlined" style={{ marginTop: '1rem' }}>
+              <InputLabel id="role-label">Role</InputLabel>
+              <Select
+                labelId="role-label"
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as string)}
+                label="Role"
+              >
+                <MenuItem value="user">User</MenuItem>
+                <MenuItem value="realtor">Realtor</MenuItem>
+              </Select>
+            </FormControl>
             <Button
               type="submit"
               fullWidth
