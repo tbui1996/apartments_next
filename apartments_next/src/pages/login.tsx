@@ -12,13 +12,22 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await signIn('credentials', { 
+    
+
+     // Attempt to sign in with credentials
+     const result = await signIn('credentials', { 
       redirect: false,
       email,
       password,
       callbackUrl: '/' 
     });
-  };
+
+    if (result?.error) {
+      alert('Login Failed. Please enter correct email and/or password')
+    } else {
+      router.push('/home')
+    }
+  }
 
   return (
     <Layout>

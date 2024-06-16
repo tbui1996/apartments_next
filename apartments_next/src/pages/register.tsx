@@ -1,7 +1,8 @@
-// pages/register.tsx
+// /Users/thomasbui/Desktop/apartments_next/apartments_next/src/pages/register.tsx
+
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Container, TextField, Typography, Button, Box } from '@mui/material';
+import { Container, TextField, Typography, Button, Box, Link } from '@mui/material';
 import Layout from '@/components/Layout';
 
 const RegisterPage: React.FC = () => {
@@ -20,13 +21,14 @@ const RegisterPage: React.FC = () => {
     }
 
     // Call your registration API
-    const response = await fetch('/api/register', {
+    const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })
     });
 
     if (response.ok) {
+      alert("Registration successful!");
       router.push('/login');
     } else {
       alert("Registration failed");
@@ -100,6 +102,11 @@ const RegisterPage: React.FC = () => {
             >
               Register
             </Button>
+            <Box mt={2}>
+              <Link href="/login" variant="body2">
+                Already registered? Click here to go back to login page
+              </Link>
+            </Box>
           </form>
         </Box>
       </Container>

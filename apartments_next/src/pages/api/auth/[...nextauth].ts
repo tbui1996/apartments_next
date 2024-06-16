@@ -1,22 +1,32 @@
-// pages/api/auth/[...nextauth].ts
-import NextAuth from 'next-auth';
+// /Users/thomasbui/Desktop/apartments_next/apartments_next/src/pages/api/auth/[...nextauth].ts
+
+import NextAuth, { User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import { JWT } from 'next-auth/jwt';
+import { AdapterUser } from 'next-auth/adapters';
 
-
+const prisma = new PrismaClient();
 
 export default NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" }
       },
-      authorize: async (credentials) => {
-        // Implement your own logic here to find the user
-        const user = { id: '1', name: 'User', email: 'user@example.com' };
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials.password) {
+            throw new Error('Email and Password are required');
+        }
 
-        if (user) {
+        const user = await prisma.user.findUnique({
+          where: { email: credentials?.email }
+        });
+
+        if (user && await bcrypt.compare(credentials?.password, user.password)) {
           return user;
         } else {
           return null;
@@ -24,25 +34,20 @@ export default NextAuth({
       }
     })
   ],
-  pages: {
-    signIn: '/login',
-  },
+
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({token, user}) {
       if (user) {
         token.id = user.id;
+        token.email = user.email;
       }
-      return token;
+      return await token;
     },
-    async session({ session, token }) {
-      if (token.id) {
-        session.user = {
-          ...session.user,
-          id: token.id,
-        };
-      }
-      return session;
+    async session({session, token}) {
+      session.user = token
+      session.user.id = token.id;
+      session.user.email = token.email;
+      return await session;
     }
   }
 });
-
