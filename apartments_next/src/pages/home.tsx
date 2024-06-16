@@ -1,34 +1,41 @@
 // pages/home.tsx
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { Button, Container, Typography, Box } from '@mui/material';
-import Layout from '@/components/Layout';
+import Layout from '@/components/Layout'; // Replace with your Layout component
+import { useRouter } from 'next/router';
 
 const HomePage: React.FC = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const handleLogout = async () => {
-    await signOut({ redirect: false, callbackUrl: '/' });
+    await signOut({ redirect: false }); 
+    router.push('/login')
   };
 
+  if (!session) {
+    return null; // Redirect or handle case where user is not logged in
+  }
+
   return (
-    <Layout>
-      <Container maxWidth="sm">
-        <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
-          <Typography variant="h4" gutterBottom>
-            Home Page
-          </Typography>
-          <Typography variant="body1">
-            Hello, World!
-          </Typography>
-          <Button
-            onClick={handleLogout}
-            variant="contained"
-            color="primary"
-            style={{ marginTop: '1rem' }}
-          >
-            Logout
-          </Button>
-        </Box>
-      </Container>
-    </Layout>
+    <Container maxWidth="sm">
+      <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
+        <Typography variant="h4" gutterBottom>
+          Home Page
+        </Typography>
+        <Typography variant="body1">
+          Hello, World!
+        </Typography>
+        <Button
+          onClick={handleLogout}
+          variant="contained"
+          color="primary"
+          style={{ marginTop: '1rem' }}
+        >
+          Logout
+        </Button>
+      </Box>
+    </Container>
   );
 };
 
