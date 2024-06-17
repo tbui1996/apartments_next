@@ -1,15 +1,16 @@
 // pages/login.tsx
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button, Container, TextField, Typography, Box, Link } from '@mui/material';
 import Layout from '@/components/Layout';
+import { getServerSession } from 'next-auth';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const router = useRouter();
-
+  const {data: session} = useSession()
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -25,7 +26,12 @@ const LoginPage: React.FC = () => {
     if (result?.error) {
       alert('Login Failed. Please enter correct email and/or password')
     } else {
-      router.push('/home')
+      if(session?.user?.id === 'user')
+      {
+        router.push('/home')
+      }else {
+        router.push('/realtorhome')
+      }
     }
   }
 

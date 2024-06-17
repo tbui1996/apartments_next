@@ -8,6 +8,7 @@ const HomePage: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
+  
   const handleLogout = async () => {
     await signOut({ redirect: false }); 
     router.push('/login')
@@ -16,6 +17,7 @@ const HomePage: React.FC = () => {
   if (!session) {
     return null; // Redirect or handle case where user is not logged in
   }
+  console.log('what is session here: ', session.user?.id)
 
   return (
     <Container maxWidth="sm">
@@ -24,7 +26,7 @@ const HomePage: React.FC = () => {
           Home Page
         </Typography>
         <Typography variant="body1">
-          Hello, World!
+          {session.user?.email}
         </Typography>
         <Button
           onClick={handleLogout}

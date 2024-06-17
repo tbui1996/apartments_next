@@ -1,13 +1,11 @@
-// /Users/thomasbui/Desktop/apartments_next/apartments_next/src/pages/api/auth/[...nextauth].ts
-
-import NextAuth, { User } from 'next-auth';
+import NextAuth, { User, type DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { JWT } from 'next-auth/jwt';
-import { AdapterUser } from 'next-auth/adapters';
 
 const prisma = new PrismaClient();
+
+
 
 export default NextAuth({
   providers: [
@@ -25,6 +23,7 @@ export default NextAuth({
         const user = await prisma.user.findUnique({
           where: { email: credentials?.email }
         });
+        console.log('what is user here: ', user)
 
         if (user && await bcrypt.compare(credentials?.password, user.password)) {
           return user;
@@ -38,16 +37,18 @@ export default NextAuth({
   callbacks: {
     async jwt({token, user}) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
+        token.role = user.role
       }
-      return await token;
+      return token;
     },
     async session({session, token}) {
-      session.user = token
-      session.user.id = token.id;
-      session.user.email = token.email;
-      return await session;
+
+      console.log('sess: ', session)
+      console.log('token: ',token)
+      if (session?.user) {
+        session.user.id = token.role
+      }
+      return session
     }
   }
 });
