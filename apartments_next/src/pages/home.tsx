@@ -1,44 +1,36 @@
-// pages/home.tsx
-import { signOut, useSession } from 'next-auth/react';
-import { Button, Container, Typography, Box } from '@mui/material';
-import Layout from '@/components/Layout'; // Replace with your Layout component
-import { useRouter } from 'next/router';
+import React from 'react';
+import { Container, Grid, Paper } from '@mui/material';
+import { GetServerSideProps } from 'next';
+import { prisma } from '../lib/prisma';
+import FilterForm from '../components/FilterForm';
+import ApartmentTable from '../components/ApartmentTable';
+import { Apartment } from '@/types/types';
 
-const HomePage: React.FC = () => {
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  
-  const handleLogout = async () => {
-    await signOut({ redirect: false }); 
-    router.push('/login')
-  };
-
-  if (!session) {
-    return null; // Redirect or handle case where user is not logged in
-  }
-  console.log('what is session here: ', session.user?.id)
-
+interface HomeProps {
+apartments: Apartment[]
+}
+const Home = ({ apartments }: HomeProps) => {
   return (
-    <Container maxWidth="sm">
-      <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
-        <Typography variant="h4" gutterBottom>
-          Home Page
-        </Typography>
-        <Typography variant="body1">
-          {session.user?.email}
-        </Typography>
-        <Button
-          onClick={handleLogout}
-          variant="contained"
-          color="primary"
-          style={{ marginTop: '1rem' }}
-        >
-          Logout
-        </Button>
-      </Box>
+    <Container style={{ marginTop: '2rem' }}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Paper style={{ padding: '1rem', backgroundColor: 'white' }}>
+            <FilterForm />
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <ApartmentTable apartments={apartments} />
+        </Grid>
+      </Grid>
     </Container>
   );
 };
 
-export default HomePage;
+export const getServerSideProps: GetServerSideProps = async () => {
+  const apartments = await prisma.apartment.findMany();
+  return {
+    props: { apartments },
+  };
+};
+
+export default Home;
