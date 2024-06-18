@@ -4,12 +4,16 @@ import {prisma} from '../lib/prisma';
 import FilterForm from '../components/FilterForm';
 import ApartmentTable from '../components/ApartmentTable';
 import { Apartment } from '@/types/types';
+import { useSession } from 'next-auth/react';
+import Layout from '@/components/Layout';
 
 interface HomeProps {
   apartments: Apartment[];
 }
 
 const Home = ({ apartments: initialApartments }: HomeProps) => {
+  const {data: session} = useSession()
+  console.log('what is sesh: ', session)
   const [apartments, setApartments] = useState<Apartment[]>(initialApartments);
 
   const handleFilter = async (filters: { minArea?: number; maxArea?: number; minPrice?: number; maxPrice?: number }) => {
@@ -29,7 +33,8 @@ const Home = ({ apartments: initialApartments }: HomeProps) => {
   };
 
   return (
-    <Container style={{ marginTop: '2rem' }}>
+    <Layout>
+      <Container style={{ marginTop: '2rem' }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Paper style={{ padding: '1rem', backgroundColor: 'white' }}>
@@ -41,6 +46,8 @@ const Home = ({ apartments: initialApartments }: HomeProps) => {
         </Grid>
       </Grid>
     </Container>
+    </Layout>
+    
   );
 };
 
