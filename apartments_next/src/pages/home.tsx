@@ -6,14 +6,20 @@ import ApartmentTable from '../components/ApartmentTable';
 import { Apartment } from '@/types/types';
 import { useSession } from 'next-auth/react';
 import Layout from '@/components/Layout';
+import Navbar from '@/components/NavBar';
+import { useRouter } from 'next/router';
 
 interface HomeProps {
   apartments: Apartment[];
 }
 
 const Home = ({ apartments: initialApartments }: HomeProps) => {
-  const {data: session} = useSession()
+  const router = useRouter()
+  const {data: session, status} = useSession()
   console.log('what is sesh: ', session)
+  if(session === undefined){
+    router.push('/login')
+  }
   const [apartments, setApartments] = useState<Apartment[]>(initialApartments);
 
   const handleFilter = async (filters: { minArea?: number; maxArea?: number; minPrice?: number; maxPrice?: number }) => {
@@ -34,6 +40,7 @@ const Home = ({ apartments: initialApartments }: HomeProps) => {
 
   return (
     <Layout>
+      <Navbar />
       <Container style={{ marginTop: '2rem' }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>

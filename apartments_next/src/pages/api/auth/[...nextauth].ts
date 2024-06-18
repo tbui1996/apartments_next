@@ -35,6 +35,14 @@ export default NextAuth({
   ],
 
   callbacks: {
+    async redirect({url, baseUrl}){
+      console.log('what is url: ', url)
+      console.log('what is baseURL: ', baseUrl)
+      if (url === '/api.auth/logout') {
+        return '/login'
+      }
+      return baseUrl + '/login'
+    },
     async jwt({token, user}) {
       if (user) {
         token.role = user.role

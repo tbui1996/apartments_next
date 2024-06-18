@@ -10,7 +10,7 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const router = useRouter();
-  const {data: session} = useSession()
+  const {data: session, status} = useSession()
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -26,12 +26,21 @@ const LoginPage: React.FC = () => {
     if (result?.error) {
       alert('Login Failed. Please enter correct email and/or password')
     } else {
-      if(session?.user?.id === 'user')
-      {
-        router.push('/home')
-      }else {
-        router.push('/realtorhome')
+      if (status === "authenticated"){
+        if (session){
+          if (session.user?.id?.toLowerCase() == "user"){
+            router.push('/home')
+          }else {
+            router.push('/realtorhome')
+          }
+        }
       }
+      // if(session?.user?.id === 'user')
+      // {
+      //   router.push('/home')
+      // }else {
+      //   router.push('/realtorhome')
+      // }
     }
   }
 
